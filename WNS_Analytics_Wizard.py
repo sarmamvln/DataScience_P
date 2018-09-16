@@ -13,14 +13,23 @@ testpath= '\\WNS Analytics Wizard  2018_test_2umaH9m.csv'
 colsname=['employee_id', 'department', 'region', 'education', 'gender', 'recruitment_channel',  'no_of_trainings', 'age', 'previous_year_rating', 'length_of_service', 'KPIs_met', 'awards_won', 'avg_training_score', 'is_promoted']
 
 #Train Dataset
-traindataset= pd.read_csv(trainpath, header=None, names=colsname, index_col='employee_id',na_values='!')  #
+traindataset= pd.read_csv(trainpath, header=None, names=colsname, index_col='employee_id',na_values='?')  #
 
 #Actual test data read
-testdataset= pd.read_csv(testpath, header=None, names=colsname[0:13], index_col='employee_id',na_values='!') #
+testdataset= pd.read_csv(testpath, header=None, names=colsname[0:13], index_col='employee_id',na_values='?') #
+
 
 
 objcols= ['department', 'region', 'education', 'gender', 'recruitment_channel']
 numcols= ['no_of_trainings', 'age', 'previous_year_rating', 'length_of_service', 'KPIs_met', 'awards_won', 'avg_training_score']
+
+
+# for col in traindataset.columns:
+#     if traindataset[col].dtype == object:
+#         count = 0
+#         count = [count + 1 for x in traindataset[col] if x == '?']
+#         print(col + ' ' + str(sum(count)))
+
 
 
 # #Count unique values in dataset
@@ -52,7 +61,6 @@ def clean_process(dataset, objcols= objcols, numcols=numcols):
             dataset['is_promoted'] = pd.to_numeric(dataset['is_promoted'], errors='coerce')
 
 
-
     dataset[objcols] = dataset[objcols].astype('category')
     dataset['dum_department'] = dataset['department'].cat.codes
     dataset['dum_region'] = dataset['region'].cat.codes
@@ -63,6 +71,7 @@ def clean_process(dataset, objcols= objcols, numcols=numcols):
 
     dataset= dataset.drop(axis=1, columns=objcols)
 
+    dataset.fillna(0, inplace=True)
     # for col in numcols:
     #     dataset[col] = dataset[col].fillna(dataset[col].mean())
 
@@ -73,36 +82,40 @@ def clean_process(dataset, objcols= objcols, numcols=numcols):
 
 dataset= clean_process(traindataset)
 
-#Actual Testdata cleaning
-dataset_tes= clean_process(testdataset)
 
 
-# #Bar chart
-# def plot_bars(dataset, cols):
-#     for col in cols:
-#         fig = plt.figure(figsize=(6,6))
-#         ax = fig.gca()
-#         counts = dataset[col].value_counts()
-#         counts.plot.bar(ax = ax, color = 'blue')
-#         ax.set_title('Number of Prometed by ' + col)
-#         ax.set_xlabel(col)
-#         ax.set_ylabel('Count of Promoted')
-#         plt.show()
 #
-# plot_bars(dataset, num_cols)
+# #Actual Testdata cleaning
+dataset_tes= clean_process(testdataset)
+#
+#
+# # #Bar chart
+# # def plot_bars(dataset, cols):
+# #     for col in cols:
+# #         fig = plt.figure(figsize=(6,6))
+# #         ax = fig.gca()
+# #         counts = dataset[col].value_counts()
+# #         counts.plot.bar(ax = ax, color = 'blue')
+# #         ax.set_title('Number of Prometed by ' + col)
+# #         ax.set_xlabel(col)
+# #         ax.set_ylabel('Count of Promoted')
+# #         plt.show()
+# #
+# # plot_bars(dataset, num_cols)
+#
+#
 
 
-
-# print(dataset.dtypes)
-# print('================================================')
-#Actual Test data dtypes
-#print(dataset_tes.dtypes)
-
-
+# # print(dataset.dtypes)
+# # print('================================================')
+# #Actual Test data dtypes
+# #print(dataset_tes.dtypes)
+#
+#
 X= dataset.loc[:, ['no_of_trainings', 'age', 'previous_year_rating', 'length_of_service', 'KPIs_met', 'awards_won', 'avg_training_score','dum_department','dum_region','dum_education','dum_gender','dum_recruitment_channel']].values
 y= dataset.loc[:, 'is_promoted'].values
 
-
+X_test_prov= dataset.iloc[:].values
 
 #for validating model accuracy
 from sklearn.cross_validation import train_test_split
@@ -119,53 +132,24 @@ dc.fit(X_train, y_train)
 #for validating model y_pred
 y_pred= dc.predict(X_test)
 
-#Actual Test y_pred
-#y_pred= dc.predict(X_test)
+#Actual Test y_pred based on provide Test set
+#y_pred_for_testset= dc.predict(X_test_prov)
+
+y_pred_for_testset= dc.apply(X_test_prov)
 
 from sklearn.metrics import accuracy_score,confusion_matrix
-cm=confusion_matrix(y_train,y_pred)
-acc= accuracy_score(y_train, y_pred)
+cm=confusion_matrix(y_test,y_pred)
+acc= accuracy_score(y_test, y_pred)
 
 print('======================================')
-print('======================================')
+print('Model Confusion Matrix: ')
+print('---------------------------')
 print(cm)
 print('======================')
-print(acc)
+print('Model Accuracy is : ', acc*100 ,'%')
 
 
-# # Visualising the Training set results
-# from matplotlib.colors import ListedColormap
-# X_set, y_set = X_train, y_train
-# X1, X2 = np.meshgrid(np.arange(start = X_set[:, 0].min() - 1, stop = X_set[:, 0].max() + 1, step = 0.01),
-#                      np.arange(start = X_set[:, 1].min() - 1, stop = X_set[:, 1].max() + 1, step = 0.01))
-# plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
-#              alpha = 0.75, cmap = ListedColormap(('red', 'green')))
-# plt.xlim(X1.min(), X1.max())
-# plt.ylim(X2.min(), X2.max())
-# for i, j in enumerate(np.unique(y_set)):
-#     plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1],
-#                 c = ListedColormap(('red', 'green'))(i), label = j)
-# plt.title('Decision Tree Classification (Training set)')
-# plt.xlabel('Factors')
-# plt.ylabel('is_promoted')
-# plt.legend()
-# plt.show()
-#
-# # Visualising the Test set results
-# from matplotlib.colors import ListedColormap
-# X_set, y_set = X_test, y_test
-# X1, X2 = np.meshgrid(np.arange(start = X_set[:, 0].min() - 1, stop = X_set[:, 0].max() + 1, step = 0.01),
-#                      np.arange(start = X_set[:, 1].min() - 1, stop = X_set[:, 1].max() + 1, step = 0.01))
-# plt.contourf(X1, X2, classifier.predict(np.array([X1.ravel(), X2.ravel()]).T).reshape(X1.shape),
-#              alpha = 0.75, cmap = ListedColormap(('red', 'green')))
-# plt.xlim(X1.min(), X1.max())
-# plt.ylim(X2.min(), X2.max())
-# for i, j in enumerate(np.unique(y_set)):
-#     plt.scatter(X_set[y_set == j, 0], X_set[y_set == j, 1],
-#                 c = ListedColormap(('red', 'green'))(i), label = j)
-# plt.title('Decision Tree Classification (Test set)')
-# plt.xlabel('Factors')
-# plt.ylabel('is_promoted')
-# plt.legend()
-# plt.show()
+print('*************************************************************')
+print('Actual Test set provided y values: ')
+print(y_pred_for_testset)
 
