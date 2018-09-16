@@ -6,10 +6,10 @@ import scipy
 import sklearn
 import csv
 
-trainpath= 'C:\\Users\\sarmamvln\\Downloads\\Data Science_10 Feb 2018\\Practise_datasets\\WNS Analytics Wizard  2018\\WNS Analytics Wizard  2018_train_LZdllcl.csv'
+trainpath= '\\WNS Analytics Wizard  2018_train_LZdllcl.csv'
 
 #Actual Test data path
-testpath= 'C:\\Users\\sarmamvln\\Downloads\\Data Science_10 Feb 2018\\Practise_datasets\\WNS Analytics Wizard  2018\\WNS Analytics Wizard  2018_test_2umaH9m.csv'
+testpath= '\\WNS Analytics Wizard  2018_test_2umaH9m.csv'
 
 colsname=['employee_id', 'department', 'region', 'education', 'gender', 'recruitment_channel',  'no_of_trainings', 'age', 'previous_year_rating', 'length_of_service', 'KPIs_met', 'awards_won', 'avg_training_score', 'is_promoted']
 
@@ -172,7 +172,7 @@ print('*************************************************************')
 print('Actual Test set provided y values: ')
 
 
-with open("C:/Users/sarmamvln/Downloads/Data Science_10 Feb 2018/Practise_datasets/WNS Analytics Wizard  2018/results.csv", 'w') as myfile:
+with open("/results.csv", 'w') as myfile:
     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
     wr.writerow(predicted)
 
