@@ -123,7 +123,7 @@ X= dataset.loc[:, ['no_of_trainings', 'age', 'previous_year_rating', 'length_of_
 y= dataset.loc[:, 'is_promoted'].values
 
 #Actual Test data Provided
-X_test_prov= dataset.iloc[:, :].values
+X_test_prov= dataset_tes.iloc[:, :].values
 
 # from sklearn.datasets.samples_generator import make_blobs
 # X_test_prov, y_pred_for_testset = make_blobs(n_samples=23490, n_features=12, random_state=1)
@@ -147,7 +147,7 @@ y_pred= dc.predict(X_test)
 
 #Actual Test y_pred based on provide Test set
 #y_pred_for_testset= dc.predict(X_test_prov)
-y_pred_for_testset= dc._validate_X_predict(X_test_prov, check_input=True)
+y_pred_for_testset= dc.predict(X_test_prov)
 
 predicted=[]
 for i in range(len(X_test_prov)):
