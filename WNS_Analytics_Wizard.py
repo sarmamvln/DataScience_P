@@ -115,7 +115,11 @@ dataset_tes= clean_process(testdataset)
 X= dataset.loc[:, ['no_of_trainings', 'age', 'previous_year_rating', 'length_of_service', 'KPIs_met', 'awards_won', 'avg_training_score','dum_department','dum_region','dum_education','dum_gender','dum_recruitment_channel']].values
 y= dataset.loc[:, 'is_promoted'].values
 
-X_test_prov= dataset.iloc[:].values
+#Actual Test data Provided
+from sklearn.datasets.samples_generator import make_blobs
+X_test_prov, y_pred_for_testset = make_blobs(n_features=12, random_state=1)
+#X_test_prov= dataset.iloc[:].values
+
 
 #for validating model accuracy
 from sklearn.cross_validation import train_test_split
@@ -129,13 +133,13 @@ dc=DecisionTreeClassifier(criterion = 'entropy', random_state = 0)
 
 dc.fit(X_train, y_train)
 
+
 #for validating model y_pred
 y_pred= dc.predict(X_test)
 
 #Actual Test y_pred based on provide Test set
 #y_pred_for_testset= dc.predict(X_test_prov)
-
-y_pred_for_testset= dc.apply(X_test_prov)
+y_pred_for_testset=dc.predict(X_test_prov)
 
 from sklearn.metrics import accuracy_score,confusion_matrix
 cm=confusion_matrix(y_test,y_pred)
@@ -151,5 +155,6 @@ print('Model Accuracy is : ', acc*100 ,'%')
 
 print('*************************************************************')
 print('Actual Test set provided y values: ')
-print(y_pred_for_testset)
+for i in range(len(X_test_prov)):
+	print("X=%s, Predicted=%s" % (X_test_prov[i], y_pred_for_testset[i]))
 
