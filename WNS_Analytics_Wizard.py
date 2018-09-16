@@ -5,6 +5,7 @@ import seaborn as sb
 import scipy
 import sklearn
 import csv
+from sklearn.datasets.samples_generator import make_blobs
 
 trainpath= '\\WNS Analytics Wizard  2018_train_LZdllcl.csv'
 
@@ -80,7 +81,6 @@ def clean_process(dataset, objcols= objcols, numcols=numcols):
     return dataset
 
 
-
 dataset= clean_process(traindataset)
 print(dataset.shape)
 
@@ -93,8 +93,12 @@ for col in dataset.columns:
     if col not in dataset_tes.columns:
         print(col)
 
-
+# # print(dataset.dtypes)
+# # print('================================================')
+# #Actual Test data dtypes
+# #print(dataset_tes.dtypes)
 #
+
 #
 # # #Bar chart
 # # def plot_bars(dataset, cols):
@@ -113,17 +117,13 @@ for col in dataset.columns:
 #
 
 
-# # print(dataset.dtypes)
-# # print('================================================')
-# #Actual Test data dtypes
-# #print(dataset_tes.dtypes)
-#
 #
 X= dataset.loc[:, ['no_of_trainings', 'age', 'previous_year_rating', 'length_of_service', 'KPIs_met', 'awards_won', 'avg_training_score','dum_department','dum_region','dum_education','dum_gender','dum_recruitment_channel']].values
 y= dataset.loc[:, 'is_promoted'].values
 
 #Actual Test data Provided
 X_test_prov= dataset_tes.iloc[:, :].values
+# y_test_prov=dataset_tes
 
 # from sklearn.datasets.samples_generator import make_blobs
 # X_test_prov, y_pred_for_testset = make_blobs(n_samples=23490, n_features=12, random_state=1)
@@ -149,11 +149,12 @@ y_pred= dc.predict(X_test)
 #y_pred_for_testset= dc.predict(X_test_prov)
 y_pred_for_testset= dc.predict(X_test_prov)
 
-predicted=[]
-for i in range(len(X_test_prov)):
-    y_pred_for_testset = dc._validate_X_predict(X_test_prov[i])
-    #print("X=%s, Predicted=%s" % (X_test_prov[i], y_pred_for_testset[i]))
-    predicted.append(y_pred_for_testset)
+
+# predicted=[]
+# for i in range(len(X_test_prov)):
+#     y_pred_for_testset = dc._validate_X_predict(X_test_prov[i])
+#     #print("X=%s, Predicted=%s" % (X_test_prov[i], y_pred_for_testset[i]))
+#     predicted.append(y_pred_for_testset)
 
 
 from sklearn.metrics import accuracy_score,confusion_matrix
@@ -169,10 +170,10 @@ print('Model Accuracy is : ', acc*100 ,'%')
 
 
 print('*************************************************************')
-print('Actual Test set provided y values: ')
-
-
-with open("/results.csv", 'w') as myfile:
-    wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-    wr.writerow(predicted)
+# print('Actual Test set provided y values: ')
+#
+#
+with open("//results.csv", 'w') as myfile:
+    wr = csv.writer(myfile)
+    wr.writerow(dc.predict(X_test_prov))
 
